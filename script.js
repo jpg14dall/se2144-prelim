@@ -64,6 +64,7 @@ function compute() {
 
 
     if (isNaN(prev) || isNaN(current)) return
+    
     switch (operation) {
         case '+':
             computation = prev + current;
