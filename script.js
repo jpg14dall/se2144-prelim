@@ -10,7 +10,7 @@ const byeButton = document.querySelector('[data-bye]')
 let previousOperand = ''
 let currentOperand = ''
 let operation = undefined
-let isOff = false
+let isOff = false // calc is on at first
 
 // DOM elements
 const previousOperandTextElement = document.querySelector('[data-previous-operand]')
@@ -22,7 +22,6 @@ function clear() {
     currentOperand = ''
     previousOperand = ''
     operation = undefined
-    updateDisplay()
 }
 
 // Function to delete the last number in the current operand
@@ -34,13 +33,13 @@ function deleteNumber() {
 // Function to append a number to the current operand
 function appendNumber(number) {
     if (isOff) return
-    const plainNumber = currentOperand.toString().replace(/,/g, '')
-    if (plainNumber.length >= 14 && number !== '.') return
-    if (number === '.' && currentOperand.includes('.')) return
-    currentOperand = currentOperand.toString() + number.toString()
+    const plainNumber = currentOperand.toString().replace(/,/g, '') //takes out the commas
+    if (plainNumber.length >= 12) return //only 12 numbers (including a decimal pt) can be input
+    if (number === '.' && currentOperand.includes('.')) return //stops from adding a second decimal point
+    currentOperand = currentOperand.toString() + number.toString() //number is added to the end of the currentOpernad
 }
 
-// Function to choose an operation (e.g., +, -, ÷, ×)
+// Function to choose an operation
 function chooseOperation(selectedOperation) {
     if (isOff) return
     if (currentOperand === '' && previousOperand === '') return
@@ -63,12 +62,6 @@ function compute() {
     const prev = parseFloat(previousOperand)
     const current = parseFloat(currentOperand)
 
-    // if (operation === '÷' && current === 0) {
-    //     currentOperand = 'Error'
-    //     operation = undefined
-    //     previousOperand = ''
-    //     return
-    // }
 
     if (isNaN(prev) || isNaN(current)) return
     switch (operation) {
@@ -89,7 +82,7 @@ function compute() {
     }
 
     const resultString = computation.toString();
-    if (resultString.replace(/,/g, '').length > 14) {
+    if (resultString.replace(/,/g, '').length > 12) {
         currentOperand = computation.toExponential(6)
     } else {
         currentOperand = Math.round(computation * 100000000000) / 100000000000
@@ -118,9 +111,9 @@ function getDisplayNumber(number) {
 
     if (decimalDigits != null) {
         const displayNumber = `${integerDisplay}.${decimalDigits}`
-        return plainNumber.length > 14 ? displayNumber.slice(0, 14) : displayNumber
+        return plainNumber.length > 13 ? displayNumber.slice(0, 13) : displayNumber
     } else {
-        return plainNumber.length > 14 ? integerDisplay.slice(0, 14) : integerDisplay
+        return plainNumber.length > 13 ? integerDisplay.slice(0, 13) : integerDisplay
     }
 }
 
@@ -136,24 +129,25 @@ function updateDisplay() {
 
 // Function to turn off the calculator and display "Goodbye"
 function toggleOff() {
-    if (isOff) return; 
-    isOff = true; 
-    currentOperand = 'Goodbye'; 
-    updateDisplay(); 
-    
+    if (isOff) return
+    isOff = true
+    previousOperand = ''
+    currentOperand = 'Goodbye'
+    operation = undefined
+    updateDisplay()
     
     setTimeout(() => {
-        currentOperand = ''; 
-        previousOperand = '';
-        operation = undefined;
-        updateDisplay();
-    }, 2000);
+        currentOperand = ''
+        previousOperand = ''
+        operation = undefined
+        updateDisplay()
+    }, 2000)
 }
 
-// Function to display a random greeting
+// Function to display a random greeting in different languages
 function giveGreeting() {
     if (isOff) return
-    const greetings = ['Hello', 'Hola', 'Kamusta', 'Bonjour', 'Ciao', 'Hallo', 'Olá']
+    const greetings = ['Hello', 'Hola', 'Kamusta', 'Bonjour', 'Ciao', 'Hallo', 'Olá', '안녕하세요', 'こんにちは', 'Namaste', 'Xin Chào']
     let randomGreeting = Math.floor(Math.random() * greetings.length)
     previousOperand = ''
     currentOperandTextElement.innerText = greetings[randomGreeting]
